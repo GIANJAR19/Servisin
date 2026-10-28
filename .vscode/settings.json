@@ -1,0 +1,13 @@
+{
+    "php.validate.executablePath": "C:\\laragon\\bin\\php\\php-8.3.30-Win32-vs16-x64\\php.exe",
+    "php.executablePath": "C:\\laragon\\bin\\php\\php-8.3.30-Win32-vs16-x64\\php.exe",
+    "files.associations": {
+        "*.blade.php": "blade"
+    },
+    "emmet.includeLanguages": {
+        "blade": "html"
+    },
+    "editor.formatOnSave": true,
+    "editor.tabSize": 4,
+    "terminal.integrated.defaultProfile.windows": "PowerShell"
+}

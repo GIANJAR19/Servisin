@@ -1,0 +1,46 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "SERVISIN: Jalankan Web Server (Artisan Serve)",
+            "type": "shell",
+            "command": "php artisan serve",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "SERVISIN: Jalankan Seluruh Pengujian (Artisan Test)",
+            "type": "shell",
+            "command": "php artisan test",
+            "problemMatcher": [],
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "SERVISIN: Reset & Seeding Database (Migrate Fresh Seed)",
+            "type": "shell",
+            "command": "php artisan migrate:fresh --seed",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "SERVISIN: Generate Application Key",
+            "type": "shell",
+            "command": "php artisan key:generate",
+            "problemMatcher": []
+        }
+    ]
+}
