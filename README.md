@@ -196,5 +196,5 @@ servisin/
 │   └── launch.json                           # Konfigurasi Debugger
 ├── DOKUMENTASI_CRUD.md                       # Pemetaan 17 Operasi CRUD
 ├── DOKUMENTASI_SOURCE_CODE.md                # Dokumentasi alur kode per fungsi
-└── LAPORAN_PENGUJIAN_DAN_COVERAGE.md         # Laporan pengujian & code coverage
+└── LAPORAN_PENGUJIAN_DAN_COVERAGE.md        # Laporan pengujian & code coverage
 ```
