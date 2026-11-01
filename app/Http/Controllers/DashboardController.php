@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Services\BookingService;
+use App\Services\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -11,10 +12,12 @@ use Illuminate\View\View;
 class DashboardController extends Controller
 {
     protected BookingService $bookingService;
+    protected NotificationService $notificationService;
 
-    public function __construct(BookingService $bookingService)
+    public function __construct(BookingService $bookingService, NotificationService $notificationService)
     {
         $this->bookingService = $bookingService;
+        $this->notificationService = $notificationService;
     }
 
     /**
@@ -40,6 +43,12 @@ class DashboardController extends Controller
             ->orderBy('jam', 'asc')
             ->get();
 
+        // Siapkan tautan WhatsApp dinamis per antrean
+        $waUrls = [];
+        foreach ($bookings as $b) {
+            $waUrls[$b->id_booking] = $this->notificationService->getWhatsAppStatusUrl($b);
+        }
+
         // Statistik kuota dan status
         $stats = $this->bookingService->getDailyQueueStats($selectedDate);
 
@@ -49,7 +58,8 @@ class DashboardController extends Controller
             'parsedDate',
             'prevDate',
             'nextDate',
-            'stats'
+            'stats',
+            'waUrls'
         ));
     }
 }

@@ -68,7 +68,13 @@
                     </div>
                 </div>
 
-                <div class="d-flex gap-2 mt-4">
+                <div class="mt-4">
+                    <a href="{{ $whatsappUrl }}" target="_blank" class="btn btn-outline-success w-100 mb-2 py-2 fw-semibold">
+                        <i class="bi bi-whatsapp me-2 fs-5 align-middle"></i>Kirim Bukti Booking ke WhatsApp Saya
+                    </a>
+                </div>
+
+                <div class="d-flex gap-2">
                     <button type="button" class="btn btn-outline-secondary w-50" onclick="window.print()">
                         <i class="bi bi-printer me-1"></i> Cetak Bukti
                     </button>

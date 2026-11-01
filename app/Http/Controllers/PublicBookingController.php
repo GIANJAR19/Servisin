@@ -7,6 +7,7 @@ use App\Models\Kendaraan;
 use App\Models\Layanan;
 use App\Models\Pelanggan;
 use App\Services\BookingService;
+use App\Services\NotificationService;
 use DomainException;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -18,10 +19,12 @@ use Illuminate\View\View;
 class PublicBookingController extends Controller
 {
     protected BookingService $bookingService;
+    protected NotificationService $notificationService;
 
-    public function __construct(BookingService $bookingService)
+    public function __construct(BookingService $bookingService, NotificationService $notificationService)
     {
         $this->bookingService = $bookingService;
+        $this->notificationService = $notificationService;
     }
 
     /**
@@ -98,7 +101,6 @@ class PublicBookingController extends Controller
                     ['nama' => $validated['nama']]
                 );
 
-                // Update nama jika ada perubahan nama terbaru
                 if ($pelanggan->nama !== $validated['nama']) {
                     $pelanggan->nama = $validated['nama'];
                     $pelanggan->save();
@@ -124,13 +126,18 @@ class PublicBookingController extends Controller
                 }
 
                 // 3. Simpan booking menggunakan BookingService (validasi slot & kuota)
-                return $this->bookingService->createBooking([
+                $newBooking = $this->bookingService->createBooking([
                     'kendaraan_id' => $kendaraan->id_kendaraan,
                     'layanan_id' => $validated['layanan_id'],
                     'tanggal' => $validated['tanggal'],
                     'jam' => $validated['jam'],
                     'keluhan' => $validated['keluhan'] ?? null,
                 ], null);
+
+                // 4. Picu notifikasi internal sistem
+                $this->notificationService->createBookingNotification($newBooking);
+
+                return $newBooking;
             });
 
             return redirect()->route('booking.confirmation', $booking->kode_booking)
@@ -156,6 +163,8 @@ class PublicBookingController extends Controller
             ->where('kode_booking', $kode_booking)
             ->firstOrFail();
 
-        return view('public.confirmation', compact('booking'));
+        $whatsappUrl = $this->notificationService->getWhatsAppBookingUrl($booking);
+
+        return view('public.confirmation', compact('booking', 'whatsappUrl'));
     }
 }

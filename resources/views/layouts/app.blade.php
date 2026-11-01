@@ -74,7 +74,14 @@
         }
         .content-area {
             margin-left: 250px;
-            padding: 1.75rem 2rem;
+            padding: 1.5rem 2rem;
+        }
+        .topbar {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         @media (max-width: 991.98px) {
             .sidebar {
@@ -110,6 +117,11 @@
     @stack('styles')
 </head>
 <body>
+    @php
+        $unreadNotifCount = \App\Models\Notifikasi::unread()->count();
+        $recentNotifs = \App\Models\Notifikasi::recent(5)->get();
+    @endphp
+
     <div class="d-flex flex-column flex-lg-row">
         <!-- Sidebar Sesuai Wireframe F.4b -->
         <aside class="sidebar">
@@ -135,6 +147,12 @@
                 </a>
 
                 <div class="nav-section-title">Sistem</div>
+                <a href="{{ route('notifikasi.index') }}" class="nav-link {{ request()->routeIs('notifikasi.*') ? 'active' : '' }}">
+                    <i class="bi bi-bell"></i> Notifikasi
+                    @if($unreadNotifCount > 0)
+                    <span class="badge bg-danger rounded-pill ms-auto" style="font-size: 0.7rem;">{{ $unreadNotifCount }}</span>
+                    @endif
+                </a>
                 @if(auth()->user()->isPemilik())
                 <a href="{{ route('pengguna.index') }}" class="nav-link {{ request()->routeIs('pengguna.*') ? 'active' : '' }}">
                     <i class="bi bi-shield-lock"></i> Kelola Pengguna 
@@ -172,6 +190,65 @@
 
         <!-- Main Content Area -->
         <main class="content-area flex-grow-1">
+            <!-- Topbar Header dengan Lonceng Notifikasi Interaktif -->
+            <div class="topbar d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-muted small">Bengkel Mandiri:</span>
+                    <strong class="text-dark">SERVISIN</strong>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Dropdown Lonceng Notifikasi -->
+                    <div class="dropdown">
+                        <button class="btn btn-light position-relative rounded-pill px-3 py-1 border" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-bell-fill text-secondary"></i>
+                            @if($unreadNotifCount > 0)
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
+                                {{ $unreadNotifCount }}
+                                <span class="visually-hidden">notifikasi belum dibaca</span>
+                            </span>
+                            @endif
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end shadow-sm p-0" style="width: 340px; border-radius: 12px; overflow: hidden;">
+                            <div class="p-3 bg-light border-bottom d-flex justify-content-between align-items-center">
+                                <h6 class="fw-bold mb-0 text-dark">Notifikasi Sistem</h6>
+                                @if($unreadNotifCount > 0)
+                                <span class="badge bg-danger rounded-pill">{{ $unreadNotifCount }} Baru</span>
+                                @endif
+                            </div>
+                            <div class="list-group list-group-flush" style="max-height: 280px; overflow-y: auto;">
+                                @forelse($recentNotifs as $rn)
+                                <a href="{{ $rn->booking_id ? route('booking.show', $rn->booking_id) : route('notifikasi.index') }}" class="list-group-item list-group-item-action p-2 {{ !$rn->dibaca ? 'bg-light' : '' }}">
+                                    <div class="d-flex align-items-start gap-2">
+                                        <i class="bi {{ $rn->tipe === 'booking_baru' ? 'bi-calendar-plus text-primary' : 'bi-arrow-repeat text-warning' }} fs-5 mt-1"></i>
+                                        <div class="overflow-hidden">
+                                            <div class="small fw-bold text-dark text-truncate">{{ $rn->judul }}</div>
+                                            <div class="text-muted" style="font-size: 0.72rem; line-height: 1.2;">{{ Str::limit($rn->pesan, 55) }}</div>
+                                            <div class="text-secondary mt-1" style="font-size: 0.65rem;">{{ $rn->created_at->diffForHumans() }}</div>
+                                        </div>
+                                    </div>
+                                </a>
+                                @empty
+                                <div class="p-3 text-center text-muted small">
+                                    Belum ada notifikasi.
+                                </div>
+                                @endforelse
+                            </div>
+                            <div class="p-2 text-center bg-light border-top">
+                                <a href="{{ route('notifikasi.index') }}" class="small text-decoration-none fw-semibold">
+                                    Lihat Semua Notifikasi <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-none d-sm-block text-end">
+                        <div class="small fw-bold text-dark">{{ auth()->user()->nama }}</div>
+                        <div class="text-muted" style="font-size: 0.7rem;">{{ auth()->user()->role }}</div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Flash Message Alerts -->
             @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">

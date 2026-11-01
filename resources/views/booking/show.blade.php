@@ -113,6 +113,13 @@
                             </span>
                         @endif
                     </div>
+
+                    <div class="mt-3 pt-3 border-top">
+                        <h6 class="fw-bold text-dark mb-2"><i class="bi bi-whatsapp text-success me-1"></i>Notifikasi Langsung:</h6>
+                        <a href="{{ $whatsappUrl }}" target="_blank" class="btn btn-success btn-sm fw-semibold">
+                            <i class="bi bi-whatsapp me-1"></i> Kirim Kabar Status ke WhatsApp Pelanggan
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

@@ -159,6 +159,10 @@
                                 </a>
                             @endif
 
+                            <a href="{{ $waUrls[$b->id_booking] ?? '#' }}" target="_blank" class="btn btn-sm btn-outline-success" title="Kirim Notifikasi WhatsApp ke Pelanggan">
+                                <i class="bi bi-whatsapp"></i>
+                            </a>
+
                             <div class="dropdown d-inline">
                                 <button class="btn btn-sm btn-light border" type="button" data-bs-toggle="dropdown">
                                     <i class="bi bi-three-dots-vertical"></i>

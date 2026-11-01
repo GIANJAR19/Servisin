@@ -5,6 +5,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KendaraanController;
 use App\Http\Controllers\LayananController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PelangganController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicBookingController;
@@ -64,6 +65,13 @@ Route::middleware('auth')->group(function () {
     Route::put('/admin/booking/{booking}', [BookingController::class, 'update'])->name('booking.update');
     Route::patch('/admin/booking/{booking}/status', [BookingController::class, 'updateStatus'])->name('booking.status');
     Route::delete('/admin/booking/{booking}', [BookingController::class, 'destroy'])->name('booking.destroy');
+
+    // Fitur Notifikasi Sistem & WhatsApp
+    Route::get('/notifikasi', [NotificationController::class, 'index'])->name('notifikasi.index');
+    Route::patch('/notifikasi/{notifikasi}/read', [NotificationController::class, 'markAsRead'])->name('notifikasi.read');
+    Route::post('/notifikasi/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifikasi.markAllRead');
+    Route::delete('/notifikasi/{notifikasi}', [NotificationController::class, 'destroy'])->name('notifikasi.destroy');
+    Route::get('/booking/{booking}/whatsapp', [NotificationController::class, 'sendWhatsApp'])->name('booking.whatsapp');
 
     // Modul 5: Pengaturan Akun (RU)
     Route::get('/pengaturan-akun', [ProfileController::class, 'edit'])->name('profile.edit');

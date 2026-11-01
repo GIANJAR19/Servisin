@@ -7,6 +7,7 @@ use App\Models\Kendaraan;
 use App\Models\Layanan;
 use App\Models\Pelanggan;
 use App\Services\BookingService;
+use App\Services\NotificationService;
 use DomainException;
 use Exception;
 use Illuminate\Http\RedirectResponse;
@@ -17,10 +18,12 @@ use Illuminate\View\View;
 class BookingController extends Controller
 {
     protected BookingService $bookingService;
+    protected NotificationService $notificationService;
 
-    public function __construct(BookingService $bookingService)
+    public function __construct(BookingService $bookingService, NotificationService $notificationService)
     {
         $this->bookingService = $bookingService;
+        $this->notificationService = $notificationService;
     }
 
     /**
@@ -103,6 +106,9 @@ class BookingController extends Controller
                 'keluhan' => $validated['keluhan'] ?? null,
             ], auth()->id());
 
+            // Picu notifikasi internal
+            $this->notificationService->createBookingNotification($booking);
+
             return redirect()->route('dashboard', ['tanggal' => $validated['tanggal']])
                 ->with('success', "Booking {$booking->kode_booking} berhasil ditambahkan.");
 
@@ -119,7 +125,9 @@ class BookingController extends Controller
     public function show(Booking $booking): View
     {
         $booking->load(['kendaraan.pelanggan', 'layanan', 'user']);
-        return view('booking.show', compact('booking'));
+        $whatsappUrl = $this->notificationService->getWhatsAppStatusUrl($booking);
+
+        return view('booking.show', compact('booking', 'whatsappUrl'));
     }
 
     /**
@@ -184,7 +192,11 @@ class BookingController extends Controller
         ]);
 
         try {
+            $oldStatus = $booking->status;
             $this->bookingService->updateBookingStatus($booking, $validated['status']);
+
+            // Picu notifikasi internal sistem
+            $this->notificationService->createStatusNotification($booking, $oldStatus, $validated['status']);
 
             return back()->with('success', "Status booking {$booking->kode_booking} berhasil diubah menjadi {$validated['status']}.");
         } catch (\InvalidArgumentException $e) {
